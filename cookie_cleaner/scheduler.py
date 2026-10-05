@@ -42,7 +42,7 @@ TASK_TEMPLATE = """<?xml version="1.0" encoding="UTF-16"?>
   <Actions Context="Author">
     <Exec>
       <Command>{interpreter}</Command>
-      <Arguments>-m cookie_cleaner run</Arguments>
+      <Arguments>{arguments}</Arguments>
       <WorkingDirectory>{working_directory}</WorkingDirectory>
     </Exec>
   </Actions>
@@ -72,6 +72,7 @@ def build_task_xml(
     user: str,
     interpreter: Path,
     working_directory: Path,
+    arguments: str = "-m cookie_cleaner run",
     today: date | None = None,
 ) -> str:
     start = f"{(today or date.today()).isoformat()}T{rule.time}:00"
@@ -81,6 +82,7 @@ def build_task_xml(
         logon_trigger=logon,
         user=escape(user),
         interpreter=escape(str(interpreter)),
+        arguments=escape(arguments),
         working_directory=escape(str(working_directory)),
     )
 
@@ -102,8 +104,13 @@ def is_installed() -> bool:
 
 def install(rule: ScheduleRule) -> None:
     user = f"{os.environ.get('USERDOMAIN', '')}\\{os.environ.get('USERNAME', '')}"
-    working_directory = Path(__file__).resolve().parent.parent
-    xml = build_task_xml(rule, user, _windowless_interpreter(), working_directory)
+    if getattr(sys, "frozen", False):
+        interpreter, arguments = Path(sys.executable), "run"
+        working_directory = interpreter.parent
+    else:
+        interpreter, arguments = _windowless_interpreter(), "-m cookie_cleaner run"
+        working_directory = Path(__file__).resolve().parent.parent
+    xml = build_task_xml(rule, user, interpreter, working_directory, arguments)
     with tempfile.TemporaryDirectory() as folder:
         definition = Path(folder) / "task.xml"
         definition.write_text(xml, encoding="utf-16")
