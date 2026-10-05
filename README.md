@@ -29,12 +29,12 @@ Alle Profile eines Browsers werden erkannt, bei Chromium-Browsern mit dem im Bro
 
 ## Installation und Start
 
-**Ohne Installation:** `Cookie-Bereinigung.exe` aus den [Releases](https://github.com/Pal-Tomer/Cookie-Bereinigung/releases) laden und starten. Weder Python noch weitere Pakete sind nötig; die Kommandozeilen-Befehle unten funktionieren auch mit der `.exe` (`Cookie-Bereinigung.exe run --dry-run`).
+**Ohne Installation:** `Cookie-Bereinigung.exe` aus den [Releases](https://github.com/paul-teumer/Cookie-Bereinigung/releases) laden und starten. Weder Python noch weitere Pakete sind nötig; die Kommandozeilen-Befehle unten funktionieren auch mit der `.exe` (`Cookie-Bereinigung.exe run --dry-run`).
 
 **Aus dem Quelltext:** Windows 10 oder 11 und Python ab 3.10 mit Tkinter (Bestandteil der Standardinstallation); es werden keine weiteren Pakete benötigt.
 
 ```bash
-git clone https://github.com/Pal-Tomer/Cookie-Bereinigung.git
+git clone https://github.com/paul-teumer/Cookie-Bereinigung.git
 cd Cookie-Bereinigung
 pythonw cookie_bereinigung.pyw
 ```
@@ -68,4 +68,4 @@ python erstellen.py   # baut Cookie-Bereinigung.exe (benötigt PyInstaller)
 
 ## Lizenz
 
-MIT, siehe [LICENSE](LICENSE).
+Copyright © 2026 Paul Teumer. Lizenziert unter der [GNU General Public License v3.0](LICENSE).

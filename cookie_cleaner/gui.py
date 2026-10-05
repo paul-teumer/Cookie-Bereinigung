@@ -22,7 +22,7 @@ from .config import (
     save_configuration,
 )
 from .engine import AGE_MODE, FULL_MODE, RunReport, next_full_reset_date, read_history, run_manual
-from .widgets import DARK, LIGHT, Button, Card, Slider, Switch, configure_styles, font, label, system_prefers_dark
+from .widgets import DARK, LIGHT, Button, Card, Slider, Switch, configure_styles, darken_title_bar, font, label, system_prefers_dark
 
 WEEKDAYS = ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")
 UNIT_LABELS = {"days": "Tage", "weeks": "Wochen", "months": "Monate"}
@@ -514,7 +514,8 @@ class Application(tk.Tk):
         self.minsize(980, 820)
         self.configure(background=self.palette["background"])
         configure_styles(self, self.palette)
-        self.after(150, self._darken_title_bar)
+        if self.palette is DARK:
+            darken_title_bar(self)
         self.save_job: str | None = None
         self.schedule_job: str | None = None
         self.navigation: dict[str, tk.Label] = {}
@@ -538,17 +539,6 @@ class Application(tk.Tk):
         self.current = ""
         self.show("overview")
         self.protocol("WM_DELETE_WINDOW", self.close)
-
-    def _darken_title_bar(self) -> None:
-        if self.palette is not DARK:
-            return
-        try:
-            import ctypes
-
-            handle = ctypes.windll.user32.GetParent(self.winfo_id())
-            ctypes.windll.dwmapi.DwmSetWindowAttribute(handle, 20, ctypes.byref(ctypes.c_int(1)), 4)
-        except (AttributeError, OSError):
-            pass
 
     def _hover(self, key: str, inside: bool) -> None:
         if key != self.current:
