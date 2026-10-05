@@ -436,7 +436,7 @@ class SchedulePage(Page):
         self.run_at_logon = tk.BooleanVar(value=rule.run_at_logon)
         Switch(logon_row, self.palette, self.run_at_logon).pack(side="left")
         label(logon_row, self.palette, "Zusätzlich bei jeder Windows-Anmeldung").pack(side="left", padx=(12, 0))
-        label(card.body, self.palette, "War der Rechner zur eingestellten Uhrzeit aus, holt Windows den Lauf ohnehin nach, sobald er wieder läuft. Dieser Schalter führt zusätzlich bei jeder Anmeldung aus.", muted=True, size=9).pack(anchor="w", pady=(4, 0))
+        label(card.body, self.palette, "War der Rechner zur eingestellten Uhrzeit aus, holt Windows den Lauf ohnehin nach, sobald er wieder läuft. Dieser Schalter führt zusätzlich bei jeder Anmeldung aus.", muted=True, size=9, wraplength=720, justify="left").pack(anchor="w", pady=(4, 0))
 
         self.status = label(card.body, self.palette, "", size=9)
         self.status.pack(anchor="w", pady=(18, 0))
