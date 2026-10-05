@@ -12,7 +12,7 @@ Löscht veraltete Cookies automatisch – in 18 Windows-Browsern, nach Alter ode
 - **Websitedaten** – entfernt in Browsern der Firefox-Familie zusätzlich Local Storage und IndexedDB von Websites ohne verbleibende Cookies.
 - **Sicherung** – vor jedem Löschen wird eine Kopie der Cookie-Datenbank angelegt (1 bis 50 Kopien je Profil).
 - **Vorschau** – zeigt je Profil, was gelöscht würde, ohne etwas zu verändern.
-- **Zeitplan** – richtet eine Aufgabe der Windows-Aufgabenplanung ein (täglich zur gewählten Uhrzeit, optional bei jeder Anmeldung).
+- **Zeitplan** – richtet eine Aufgabe der Windows-Aufgabenplanung ein (täglich zur gewählten Uhrzeit; war der Rechner dann aus, wird der Lauf nach dem Einschalten nachgeholt; optional zusätzlich bei jeder Anmeldung).
 - **Protokoll** – Verlauf der letzten Läufe mit gelöschten Cookies und freigegebenem Speicher.
 - **Helles und dunkles Design** nach Windows-Einstellung; Bedienung auch per Kommandozeile.
 
