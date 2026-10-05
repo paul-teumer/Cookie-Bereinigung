@@ -122,6 +122,22 @@ def shape_image(master: tk.Misc, width: int, height: int, background: str, shape
     return image
 
 
+def _equalize_field_heights(root: tk.Misc, style: ttk.Style) -> None:
+    """Gleicht Eingabe- und Auswahlfelder an die Höhe des Zahlenfelds mit den großen Pfeilen an."""
+    probes = {
+        "TSpinbox": ttk.Spinbox(root, from_=0, to=1, width=2),
+        "TCombobox": ttk.Combobox(root, values=("x",), width=2),
+        "TEntry": ttk.Entry(root, width=2),
+    }
+    heights = {name: probe.winfo_reqheight() for name, probe in probes.items()}
+    target = heights["TSpinbox"]
+    for name in ("TCombobox", "TEntry"):
+        difference = target - heights[name]
+        style.configure(name, padding=(5, 5 + difference // 2, 5, 5 + difference - difference // 2))
+    for probe in probes.values():
+        probe.destroy()
+
+
 def configure_styles(root: tk.Misc, palette: dict[str, str]) -> None:
     style = ttk.Style(root)
     style.theme_use("clam")
@@ -153,6 +169,7 @@ def configure_styles(root: tk.Misc, palette: dict[str, str]) -> None:
             selectbackground=[("readonly", palette["background"])],
             selectforeground=[("readonly", palette["text"])],
         )
+    _equalize_field_heights(root, style)
     root.option_add("*TCombobox*Listbox.background", palette["surface"])
     root.option_add("*TCombobox*Listbox.foreground", palette["text"])
     root.option_add("*TCombobox*Listbox.selectBackground", palette["accent"])

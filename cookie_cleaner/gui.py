@@ -64,8 +64,46 @@ class Page(tk.Frame):
         pass
 
 
-def spinbox(master, variable, low, high, width=5, command=None) -> ttk.Spinbox:
-    return ttk.Spinbox(master, from_=low, to=high, textvariable=variable, width=width, state="readonly", wrap=False, command=command)
+def spinbox(master, variable, low, high, width=5, step=1, wrap=False, digits=0) -> ttk.Spinbox:
+    """Zahlenfeld mit Pfeilen, in das sich auch direkt tippen lässt; ungültige Eingaben werden beim Verlassen korrigiert."""
+    text = tk.StringVar()
+
+    def formatted(value: int) -> str:
+        return f"{value:0{digits}d}"
+
+    def current() -> int:
+        try:
+            return min(max(int(variable.get()), low), high)
+        except (tk.TclError, ValueError):
+            return low
+
+    def from_variable(*arguments) -> None:
+        if text.get() != formatted(current()):
+            text.set(formatted(current()))
+
+    def from_text(*arguments) -> None:
+        content = text.get()
+        if content.isdigit() and low <= int(content) <= high:
+            value = int(content)
+            variable.set(formatted(value) if isinstance(variable, tk.StringVar) else value)
+
+    def commit(event=None) -> None:
+        from_text()
+        text.set(formatted(current()))
+
+    def allowed(proposed: str) -> bool:
+        return proposed == "" or (proposed.isdigit() and len(proposed) <= len(str(high)))
+
+    box = ttk.Spinbox(
+        master, from_=low, to=high, increment=step, wrap=wrap, textvariable=text, width=width,
+        format=f"%0{digits}.0f" if digits else "%.0f", validate="key", validatecommand=(master.register(allowed), "%P"),
+    )
+    from_variable()
+    variable.trace_add("write", from_variable)
+    text.trace_add("write", from_text)
+    box.bind("<FocusOut>", commit)
+    box.bind("<Return>", commit)
+    return box
 
 
 def safe_integer(variable: tk.Variable, default: int) -> int:
@@ -92,8 +130,11 @@ class OverviewPage(Page):
         self.detected = detect_browsers()
         if not self.detected:
             label(browser_card.body, self.palette, "Es wurden keine unterstützten Browser gefunden.", muted=True).pack(anchor="w")
+        if self.detected:
+            self._all_browsers_row(browser_card.body)
         for definition, profiles in self.detected.items():
             self._browser_row(browser_card.body, definition, profiles)
+        self._sync_all_browsers()
 
         action_card = Card(self, self.palette, "Bereinigung")
         action_card.pack(fill="x", pady=(14, 0))
@@ -126,6 +167,25 @@ class OverviewPage(Page):
         threading.Thread(target=self._count_all, daemon=True).start()
         self.after(100, self._poll)
 
+    def _all_browsers_row(self, master) -> None:
+        row = tk.Frame(master, background=self.palette["surface"])
+        row.pack(fill="x", pady=4)
+        self.all_browsers = tk.BooleanVar()
+        self.syncing_all_browsers = False
+        Switch(row, self.palette, self.all_browsers, command=self._toggle_all_browsers).pack(side="left")
+        label(row, self.palette, "Alle Browser", weight="bold").pack(side="left", padx=(12, 0))
+        tk.Frame(master, height=1, background=self.palette["border"]).pack(fill="x", pady=(6, 4))
+
+    def _toggle_all_browsers(self) -> None:
+        self.syncing_all_browsers = True
+        for variable in self.switches.values():
+            variable.set(self.all_browsers.get())
+        self.syncing_all_browsers = False
+
+    def _sync_all_browsers(self) -> None:
+        if self.detected and not self.syncing_all_browsers:
+            self.all_browsers.set(all(variable.get() for variable in self.switches.values()))
+
     def _browser_row(self, master, definition, profiles) -> None:
         row = tk.Frame(master, background=self.palette["surface"])
         row.pack(fill="x", pady=4)
@@ -133,6 +193,7 @@ class OverviewPage(Page):
         self.switches[definition.key] = variable
         Switch(row, self.palette, variable).pack(side="left")
         self.watch(variable)
+        variable.trace_add("write", lambda *arguments: self._sync_all_browsers())
         label(row, self.palette, definition.name, weight="bold").pack(side="left", padx=(12, 0))
         detail = f"{len(profiles)} Profil" + ("e" if len(profiles) != 1 else "")
         label(row, self.palette, detail, muted=True, size=9).pack(side="left", padx=(10, 0))
@@ -427,9 +488,9 @@ class SchedulePage(Page):
         hour, minute = rule.time.split(":")
         self.hour = tk.StringVar(value=hour)
         self.minute = tk.StringVar(value=minute)
-        ttk.Spinbox(time_row, from_=0, to=23, format="%02.0f", textvariable=self.hour, width=4, state="readonly", wrap=True).pack(side="left", padx=(12, 4))
+        spinbox(time_row, self.hour, 0, 23, width=4, wrap=True, digits=2).pack(side="left", padx=(12, 4))
         label(time_row, self.palette, ":").pack(side="left")
-        ttk.Spinbox(time_row, from_=0, to=59, increment=5, format="%02.0f", textvariable=self.minute, width=4, state="readonly", wrap=True).pack(side="left", padx=(4, 0))
+        spinbox(time_row, self.minute, 0, 59, width=4, step=5, wrap=True, digits=2).pack(side="left", padx=(4, 0))
 
         logon_row = tk.Frame(card.body, background=self.palette["surface"])
         logon_row.pack(fill="x", pady=(16, 0))
