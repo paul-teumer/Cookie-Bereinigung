@@ -72,8 +72,8 @@ def build_task_xml(
     user: str,
     interpreter: Path,
     working_directory: Path,
-    arguments: str = "-m cookie_cleaner run",
     today: date | None = None,
+    arguments: str = "-m cookie_cleaner run",
 ) -> str:
     start = f"{(today or date.today()).isoformat()}T{rule.time}:00"
     logon = LOGON_TRIGGER.format(user=escape(user)) if rule.run_at_logon else ""
@@ -110,7 +110,7 @@ def install(rule: ScheduleRule) -> None:
     else:
         interpreter, arguments = _windowless_interpreter(), "-m cookie_cleaner run"
         working_directory = Path(__file__).resolve().parent.parent
-    xml = build_task_xml(rule, user, interpreter, working_directory, arguments)
+    xml = build_task_xml(rule, user, interpreter, working_directory, arguments=arguments)
     with tempfile.TemporaryDirectory() as folder:
         definition = Path(folder) / "task.xml"
         definition.write_text(xml, encoding="utf-16")
