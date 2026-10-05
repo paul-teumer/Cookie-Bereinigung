@@ -1,6 +1,8 @@
 # Cookie-Bereinigung
 
-Löscht veraltete Cookies automatisch – in 18 Windows-Browsern, nach Alter oder als regelmäßiger vollständiger Neustart, mit Ausnahmeliste, Sicherung und Zeitplan. Ohne Abhängigkeiten, nur Python.
+Löscht veraltete Cookies automatisch – in 18 Windows-Browsern, nach Alter oder als regelmäßiger vollständiger Neustart, mit Ausnahmeliste, Sicherung und Zeitplan. Als eigenständiges Programm, ohne Installation von Python.
+
+**[⬇ Cookie-Bereinigung.exe herunterladen](https://github.com/paul-teumer/Cookie-Bereinigung/releases/latest/download/Cookie-Bereinigung.exe)** – speichern und per Doppelklick starten. Alle Versionen: [Releases](https://github.com/paul-teumer/Cookie-Bereinigung/releases).
 
 ![Übersicht](docs/uebersicht-dunkel.png)
 
